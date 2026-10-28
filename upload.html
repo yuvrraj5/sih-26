@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI-OCR FDR Upload – AICTE SecureVault</title>
+  <meta name="description" content="Smart AI-powered OCR document upload for AICTE FDR submission with automatic field extraction and NeSL verification."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter','sans-serif'] },
+          animation: {
+            'spin-slow': 'spin 3s linear infinite',
+            'scan-line': 'scanLine 1.5s ease-in-out infinite',
+            'fade-up': 'fadeUp 0.4s ease forwards',
+            'glow': 'glow 2s ease-in-out infinite',
+          },
+          keyframes: {
+            scanLine: { '0%,100%':{top:'5%'},'50%':{top:'90%'} },
+            fadeUp: { from:{opacity:0,transform:'translateY(12px)'}, to:{opacity:1,transform:'translateY(0)'} },
+            glow: { '0%,100%':{boxShadow:'0 0 20px rgba(59,130,246,0.3)'},'50%':{boxShadow:'0 0 40px rgba(59,130,246,0.6)'} },
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family:'Inter',sans-serif; }
+    .scan-line {
+      position:absolute; left:0; right:0; height:2px;
+      background:linear-gradient(90deg,transparent,#3b82f6,#60a5fa,#3b82f6,transparent);
+      animation:scanLine 1.5s ease-in-out infinite;
+      box-shadow:0 0 8px rgba(59,130,246,0.8);
+    }
+    @keyframes scanLine { 0%,100%{top:5%} 50%{top:90%} }
+
+    .grid-overlay {
+      background-image:linear-gradient(rgba(59,130,246,0.08) 1px,transparent 1px),linear-gradient(90deg,rgba(59,130,246,0.08) 1px,transparent 1px);
+      background-size:20px 20px;
+    }
+
+    .typewriter { overflow:hidden; white-space:nowrap; border-right:2px solid #3b82f6; animation:typing 2s steps(30,end) forwards, blink 0.75s step-end infinite 2s; }
+    @keyframes typing { from{width:0} to{width:100%} }
+    @keyframes blink { 50%{border-color:transparent} }
+
+    .field-appear { opacity:0; transform:translateX(-8px); animation:fadeUp 0.5s ease forwards; }
+    .field-appear:nth-child(1){animation-delay:0.1s}
+    .field-appear:nth-child(2){animation-delay:0.25s}
+    .field-appear:nth-child(3){animation-delay:0.4s}
+    .field-appear:nth-child(4){animation-delay:0.55s}
+
+    .glow-border { animation:glowBorder 2.5s ease-in-out infinite; }
+    @keyframes glowBorder { 0%,100%{border-color:rgba(59,130,246,0.4);box-shadow:0 0 0 rgba(59,130,246,0)} 50%{border-color:rgba(59,130,246,0.9);box-shadow:0 0 16px rgba(59,130,246,0.25)} }
+
+    .dot-spinner span { display:inline-block; width:6px; height:6px; border-radius:50%; background:#3b82f6; animation:dotBounce 1.2s ease-in-out infinite; }
+    .dot-spinner span:nth-child(1){animation-delay:0s}
+    .dot-spinner span:nth-child(2){animation-delay:0.2s}
+    .dot-spinner span:nth-child(3){animation-delay:0.4s}
+    @keyframes dotBounce { 0%,80%,100%{transform:scale(0);opacity:0.3} 40%{transform:scale(1);opacity:1} }
+
+    .particle { position:absolute; border-radius:50%; animation:float linear infinite; }
+    @keyframes float {
+      0%{transform:translate(0,0) rotate(0deg);opacity:0}
+      10%{opacity:0.6}
+      90%{opacity:0.3}
+      100%{transform:translate(var(--tx),var(--ty)) rotate(360deg);opacity:0}
+    }
+
+    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:#0f172a} ::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen flex flex-col items-center justify-start py-10 px-4 relative overflow-x-hidden">
+
+  <!-- Background ambient -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-600/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-violet-600/5 rounded-full blur-3xl"></div>
+    <div class="grid-overlay absolute inset-0 opacity-50"></div>
+  </div>
+
+  <!-- Page Header -->
+  <div class="relative z-10 text-center mb-8">
+    <div class="inline-flex items-center gap-2 bg-blue-950/60 border border-blue-800/40 px-4 py-1.5 rounded-full text-xs text-blue-300 font-medium mb-4">
+      <span class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+      AI-OCR Engine Active • NeSL Connected
+    </div>
+    <h1 class="text-3xl font-extrabold text-white tracking-tight">Smart FDR Upload</h1>
+    <p class="text-slate-400 text-sm mt-2">Powered by AI-OCR + NeSL Real-time Verification</p>
+  </div>
+
+  <!-- MODAL CARD -->
+  <div class="relative z-10 w-full max-w-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-700/60 rounded-3xl shadow-2xl shadow-black/50 overflow-hidden">
+
+    <!-- Modal glow top line -->
+    <div class="h-px bg-gradient-to-r from-transparent via-blue-500 to-transparent"></div>
+
+    <!-- Modal Header -->
+    <div class="flex items-center justify-between px-7 py-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-violet-600 flex items-center justify-center shadow-lg">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        </div>
+        <div>
+          <h2 class="text-base font-bold text-white">AI-OCR Document Scanner</h2>
+          <p class="text-xs text-slate-400">Upload FDR certificate for automatic extraction</p>
+        </div>
+      </div>
+      <a href="index.html" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors text-slate-400 hover:text-white">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </a>
+    </div>
+
+    <div class="px-7 py-6 space-y-6">
+
+      <!-- ═══ STEP 1: DRAG & DROP ZONE ═══ -->
+      <div id="upload-zone" class="glow-border relative border-2 border-dashed border-blue-500/40 bg-slate-800/40 rounded-2xl p-8 text-center cursor-pointer group hover:bg-slate-800/60 hover:border-blue-400/70 transition-all duration-300"
+           onclick="triggerScan()">
+
+        <!-- Corner decorations -->
+        <div class="absolute top-2 left-2 w-4 h-4 border-t-2 border-l-2 border-blue-500/60 rounded-tl-sm"></div>
+        <div class="absolute top-2 right-2 w-4 h-4 border-t-2 border-r-2 border-blue-500/60 rounded-tr-sm"></div>
+        <div class="absolute bottom-2 left-2 w-4 h-4 border-b-2 border-l-2 border-blue-500/60 rounded-bl-sm"></div>
+        <div class="absolute bottom-2 right-2 w-4 h-4 border-b-2 border-r-2 border-blue-500/60 rounded-br-sm"></div>
+
+        <div class="flex flex-col items-center gap-3">
+          <div class="w-16 h-16 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-500/20 transition-all duration-300">
+            <svg class="w-8 h-8 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/></svg>
+          </div>
+          <div>
+            <p class="text-base font-semibold text-white">Drag & Drop your FDR Document</p>
+            <p class="text-sm text-slate-400 mt-1">or <span class="text-blue-400 underline underline-offset-2">click to browse</span></p>
+          </div>
+          <div class="flex items-center gap-2 flex-wrap justify-center mt-1">
+            <span class="text-xs text-slate-500 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full">PDF</span>
+            <span class="text-xs text-slate-500 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full">JPG</span>
+            <span class="text-xs text-slate-500 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full">PNG</span>
+            <span class="text-xs text-slate-500 bg-slate-800 border border-slate-700 px-2.5 py-1 rounded-full">Max 10MB</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 2: AI SCANNING STATE ═══ -->
+      <div id="scanning-state" class="hidden">
+        <div class="bg-slate-800/50 border border-blue-500/20 rounded-2xl p-5 relative overflow-hidden">
+          <!-- Scan animation zone -->
+          <div class="relative h-20 bg-slate-900/60 rounded-xl overflow-hidden mb-4 border border-slate-700">
+            <div class="absolute inset-0 opacity-20">
+              <div class="h-full w-full" style="background:repeating-linear-gradient(0deg,rgba(59,130,246,0.1) 0px,rgba(59,130,246,0.1) 1px,transparent 1px,transparent 20px)"></div>
+            </div>
+            <div class="scan-line"></div>
+            <!-- Document preview lines -->
+            <div class="absolute inset-4 space-y-2 opacity-40">
+              <div class="h-2 bg-slate-500 rounded w-3/4"></div>
+              <div class="h-2 bg-slate-500 rounded w-1/2"></div>
+              <div class="h-2 bg-slate-500 rounded w-5/6"></div>
+              <div class="h-2 bg-slate-500 rounded w-2/3"></div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <!-- Spinner -->
+              <div class="relative w-8 h-8">
+                <svg class="w-8 h-8 animate-spin-slow text-blue-500" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-opacity="0.2"/><path d="M12 2a10 10 0 0110 10" stroke="#3b82f6" stroke-width="2" stroke-linecap="round"/></svg>
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                </div>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-white" id="scan-status">Extracting Bank Details via OCR...</p>
+                <p class="text-xs text-slate-400" id="scan-sub">Analysing document structure</p>
+              </div>
+            </div>
+            <div class="dot-spinner flex gap-1">
+              <span></span><span></span><span></span>
+            </div>
+          </div>
+
+          <!-- Progress bar -->
+          <div class="mt-4 h-1 bg-slate-700 rounded-full overflow-hidden">
+            <div id="scan-progress" class="h-full bg-gradient-to-r from-blue-600 via-blue-400 to-violet-400 rounded-full transition-all duration-500" style="width:0%"></div>
+          </div>
+
+          <!-- Scan steps -->
+          <div class="mt-3 flex flex-wrap gap-2" id="scan-steps">
+            <span class="text-xs text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded-full" id="step-1">📄 PDF Parse</span>
+            <span class="text-xs text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded-full" id="step-2">🔍 OCR Scan</span>
+            <span class="text-xs text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded-full" id="step-3">🧠 AI Extract</span>
+            <span class="text-xs text-slate-500 bg-slate-700/50 px-2 py-0.5 rounded-full" id="step-4">✅ NeSL Verify</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ STEP 3: AUTO-FILLED FORM ═══ -->
+      <div id="autofill-form" class="hidden space-y-4">
+
+        <!-- AI Badge -->
+        <div class="flex items-center gap-2 bg-emerald-950/50 border border-emerald-800/30 rounded-xl px-4 py-3">
+          <div class="flex items-center gap-2 text-emerald-400">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            <span class="text-sm font-semibold">Fields Auto-filled by AI</span>
+          </div>
+          <span class="ml-auto text-xs text-emerald-500 bg-emerald-900/40 border border-emerald-700/30 px-2 py-0.5 rounded-full">96.4% Confidence</span>
+        </div>
+
+        <!-- Form Fields -->
+        <div class="grid grid-cols-2 gap-4">
+
+          <!-- Bank Name -->
+          <div class="field-appear col-span-2">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Bank Name</label>
+            <div class="relative">
+              <input type="text" value="State Bank of India" class="w-full bg-slate-800/60 border border-slate-700 text-white text-sm pl-4 pr-10 py-3 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-medium"/>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Verified by NeSL
+            </p>
+          </div>
+
+          <!-- FDR Amount -->
+          <div class="field-appear">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">FDR Amount (₹)</label>
+            <div class="relative">
+              <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm font-bold">₹</span>
+              <input type="text" value="50,00,000" class="w-full bg-slate-800/60 border border-slate-700 text-white text-sm pl-7 pr-10 py-3 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-mono font-medium"/>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Verified by NeSL
+            </p>
+          </div>
+
+          <!-- FDR Number -->
+          <div class="field-appear">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">FDR Number</label>
+            <div class="relative">
+              <input type="text" value="SBI-FDR-2025-00871" class="w-full bg-slate-800/60 border border-slate-700 text-white text-sm pl-4 pr-10 py-3 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-mono font-medium"/>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Verified by NeSL
+            </p>
+          </div>
+
+          <!-- Issue Date -->
+          <div class="field-appear">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Issue Date</label>
+            <div class="relative">
+              <input type="text" value="15 March 2025" class="w-full bg-slate-800/60 border border-slate-700 text-white text-sm pl-4 pr-10 py-3 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-medium"/>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Verified by NeSL
+            </p>
+          </div>
+
+          <!-- Maturity Date -->
+          <div class="field-appear">
+            <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5 block">Maturity Date</label>
+            <div class="relative">
+              <input type="text" value="15 March 2027" class="w-full bg-slate-800/60 border border-slate-700 text-white text-sm pl-4 pr-10 py-3 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all font-medium"/>
+              <div class="absolute right-3 top-1/2 -translate-y-1/2">
+                <svg class="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              </div>
+            </div>
+            <p class="text-xs text-emerald-500 mt-1 flex items-center gap-1">
+              <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              Verified by NeSL
+            </p>
+          </div>
+
+        </div>
+
+        <!-- NeSL Verification Banner -->
+        <div class="bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-800/30 rounded-xl p-4 flex items-start gap-3">
+          <div class="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+          </div>
+          <div class="flex-1">
+            <p class="text-sm font-bold text-emerald-300">NeSL Cross-verification Complete</p>
+            <p class="text-xs text-emerald-500/80 mt-0.5">Document authenticated against National e-Governance Services Ltd. database. All fields match official records. Reference: <span class="font-mono text-emerald-400">NESL-2025-TXNID-77423</span></p>
+          </div>
+          <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded-full font-bold flex-shrink-0">✓ VALID</span>
+        </div>
+
+        <!-- Submit Button -->
+        <button id="submit-vault-btn" onclick="submitToVault()" class="w-full relative overflow-hidden flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 via-blue-500 to-violet-600 hover:from-blue-500 hover:via-blue-400 hover:to-violet-500 text-white font-bold py-4 px-6 rounded-2xl transition-all duration-300 shadow-xl shadow-blue-900/40 hover:shadow-blue-900/60 active:scale-98 group">
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700"></div>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"/></svg>
+          <span class="text-base tracking-wide">Submit to Vault</span>
+          <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+        </button>
+
+      </div>
+
+      <!-- Instruction when no file -->
+      <div id="idle-hint" class="flex items-center gap-2 justify-center text-xs text-slate-600">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        Click the upload zone above to simulate AI scanning
+      </div>
+
+    </div>
+
+    <!-- Bottom progress steps -->
+    <div class="px-7 py-4 bg-slate-900/50 border-t border-slate-800 flex items-center justify-between">
+      <div id="step-ind-1" class="flex items-center gap-2 text-xs font-medium text-blue-400">
+        <div class="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold">1</div>
+        Upload
+      </div>
+      <div class="flex-1 h-px bg-slate-700 mx-3" id="line-1"></div>
+      <div id="step-ind-2" class="flex items-center gap-2 text-xs font-medium text-slate-500">
+        <div class="w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-400 text-xs font-bold" id="step-dot-2">2</div>
+        AI Scan
+      </div>
+      <div class="flex-1 h-px bg-slate-700 mx-3" id="line-2"></div>
+      <div id="step-ind-3" class="flex items-center gap-2 text-xs font-medium text-slate-500">
+        <div class="w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-400 text-xs font-bold" id="step-dot-3">3</div>
+        Verify
+      </div>
+      <div class="flex-1 h-px bg-slate-700 mx-3" id="line-3"></div>
+      <div id="step-ind-4" class="flex items-center gap-2 text-xs font-medium text-slate-500">
+        <div class="w-6 h-6 rounded-full bg-slate-700 border border-slate-600 flex items-center justify-center text-slate-400 text-xs font-bold" id="step-dot-4">4</div>
+        Submit
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Success Toast -->
+  <div id="success-toast" class="hidden fixed bottom-8 left-1/2 -translate-x-1/2 bg-emerald-900 border border-emerald-700 text-emerald-200 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 text-sm font-semibold z-50">
+    <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+    FDR submitted to vault successfully! Redirecting…
+  </div>
+
+  <div class="relative z-10 mt-6 flex gap-6 text-xs text-slate-600">
+    <a href="index.html" class="hover:text-slate-400 transition-colors">← College Dashboard</a>
+    <a href="aicte-dashboard.html" class="hover:text-slate-400 transition-colors">AICTE Dashboard →</a>
+  </div>
+
+  <script>
+    let scanTimeout;
+
+    function triggerScan() {
+      const uploadZone = document.getElementById('upload-zone');
+      const scanState = document.getElementById('scanning-state');
+      const autoForm = document.getElementById('autofill-form');
+      const idleHint = document.getElementById('idle-hint');
+      const progress = document.getElementById('scan-progress');
+
+      // Already scanned
+      if (!autoForm.classList.contains('hidden')) return;
+
+      // Hide hint
+      idleHint.classList.add('hidden');
+
+      // Activate upload zone
+      uploadZone.classList.add('border-blue-400','bg-slate-800/70');
+      uploadZone.innerHTML = `
+        <div class="flex flex-col items-center gap-3">
+          <div class="relative w-16 h-16 flex items-center justify-center">
+            <svg class="w-8 h-8 text-blue-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+          </div>
+          <p class="text-sm font-semibold text-blue-300">FDR_Certificate_SBI.pdf</p>
+          <p class="text-xs text-slate-400">2.4 MB • PDF Document</p>
+          <div class="flex items-center gap-1.5 text-xs text-emerald-400 font-medium">
+            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+            File accepted
+          </div>
+        </div>`;
+
+      // Update step indicators
+      activateStep(2);
+
+      // Show scan state
+      setTimeout(() => {
+        scanState.classList.remove('hidden');
+
+        // Animate progress
+        const steps = [
+          {pct: 25, status: 'Parsing PDF structure...', sub: 'Extracting page layers', step: 'step-1'},
+          {pct: 55, status: 'Running OCR Engine...', sub: 'Recognizing text patterns', step: 'step-2'},
+          {pct: 80, status: 'AI Field Extraction...', sub: 'Mapping to FDR schema', step: 'step-3'},
+          {pct: 100, status: 'NeSL Verification...', sub: 'Cross-checking bank records', step: 'step-4'},
+        ];
+
+        let i = 0;
+        const interval = setInterval(() => {
+          if (i >= steps.length) { clearInterval(interval); return; }
+          progress.style.width = steps[i].pct + '%';
+          document.getElementById('scan-status').textContent = steps[i].status;
+          document.getElementById('scan-sub').textContent = steps[i].sub;
+          const stepEl = document.getElementById(steps[i].step);
+          if(stepEl) stepEl.className = 'text-xs text-blue-300 bg-blue-900/40 border border-blue-800/40 px-2 py-0.5 rounded-full font-medium';
+          i++;
+        }, 900);
+
+        // After full scan, show form
+        setTimeout(() => {
+          scanState.classList.add('hidden');
+          activateStep(3);
+          autoForm.classList.remove('hidden');
+          activateStep(4);
+          updateStepIndicator(4, false);
+        }, 4200);
+      }, 600);
+    }
+
+    function activateStep(n) {
+      const dot = document.getElementById('step-dot-' + n);
+      if (dot) {
+        dot.className = 'w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-bold';
+      }
+      const line = document.getElementById('line-' + (n-1));
+      if(line) line.classList.add('bg-blue-500/50');
+    }
+
+    function updateStepIndicator(n, isActive) {
+      const ind = document.getElementById('step-ind-' + n);
+      if(ind && isActive) ind.className = 'flex items-center gap-2 text-xs font-medium text-blue-400';
+    }
+
+    function submitToVault() {
+      const btn = document.getElementById('submit-vault-btn');
+      btn.innerHTML = `<svg class="w-5 h-5 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-opacity="0.3"/><path d="M12 2a10 10 0 0110 10" stroke="white" stroke-width="2" stroke-linecap="round"/></svg><span class="text-base">Submitting to Vault...</span>`;
+      btn.disabled = true;
+
+      setTimeout(() => {
+        const toast = document.getElementById('success-toast');
+        toast.classList.remove('hidden');
+        toast.classList.add('flex');
+        setTimeout(() => { window.location.href = 'index.html'; }, 2500);
+      }, 1500);
+    }
+  </script>
+</body>
+</html>

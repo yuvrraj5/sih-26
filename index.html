@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AICTE FDR Portal – Institution Dashboard</title>
+  <meta name="description" content="College Administrator dashboard to manage AICTE Security Deposits (FDRs) – view, upload, and track Fixed Deposit Records."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            brand: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',900:'#1e3a8a' },
+            vault: { dark:'#0f172a', card:'#1e293b', border:'#334155' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    .sidebar-link { transition: all 0.2s ease; }
+    .sidebar-link:hover { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .sidebar-link.active { background: rgba(59,130,246,0.2); color: #3b82f6; border-left: 3px solid #3b82f6; }
+    .card-hover { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .card-hover:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .table-row:hover { background: rgba(59,130,246,0.05); }
+    .pulse-dot { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%,100% { opacity:1; transform:scale(1); }
+      50% { opacity:0.6; transform:scale(1.3); }
+    }
+    .shimmer { background: linear-gradient(90deg,rgba(255,255,255,0.03) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.03) 75%); background-size:200% 100%; animation:shimmer 2s infinite; }
+    @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:#1e293b} ::-webkit-scrollbar-thumb{background:#334155;border-radius:3px}
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen flex">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col fixed top-0 left-0 h-full z-30">
+    <!-- Logo -->
+    <div class="px-6 py-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-white tracking-wide">AICTE FDR</p>
+          <p class="text-xs text-slate-400">SecureVault Portal</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- College Info -->
+    <div class="px-4 py-4 border-b border-slate-800">
+      <div class="bg-blue-900/20 border border-blue-800/30 rounded-xl p-3">
+        <p class="text-xs text-blue-400 font-medium mb-1">Logged in as</p>
+        <p class="text-sm font-semibold text-white">Delhi Technical University</p>
+        <p class="text-xs text-slate-400 mt-0.5">Institution ID: DTU-2024-001</p>
+      </div>
+    </div>
+
+    <!-- Nav Links -->
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <a href="#" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+        <svg class="w-4.5 h-4.5 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+        Home
+      </a>
+      <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V7l7-5 7 5v12a2 2 0 01-2 2z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 21V12h6v9"/></svg>
+        My FDRs
+        <span class="ml-auto text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">12</span>
+      </a>
+      <a href="upload.html" id="nav-upload" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Upload New
+      </a>
+      <a href="notifications.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Notifications
+        <span class="ml-auto text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">3</span>
+      </a>
+      <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
+        Settings
+      </a>
+    </nav>
+
+    <!-- Bottom Help -->
+    <div class="px-4 py-4 border-t border-slate-800">
+      <div class="flex items-center gap-3 px-3 py-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">AD</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-white truncate">Admin User</p>
+          <p class="text-xs text-slate-400 truncate">admin@dtu.ac.in</p>
+        </div>
+        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="ml-64 flex-1 flex flex-col min-h-screen">
+
+    <!-- TOP HEADER -->
+    <header class="bg-slate-900/80 backdrop-blur border-b border-slate-800 px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+      <div>
+        <h1 class="text-lg font-bold text-white">Welcome back, <span class="text-blue-400">Admin</span> 👋</h1>
+        <p class="text-xs text-slate-400 mt-0.5">Wednesday, 28 October 2026 • Institution Dashboard</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="relative cursor-pointer group">
+          <svg class="w-6 h-6 text-slate-400 group-hover:text-white transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span class="pulse-dot absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-slate-900"></span>
+        </div>
+        <div class="h-5 w-px bg-slate-700"></div>
+        <a href="login.html" class="text-xs text-slate-400 hover:text-slate-200 transition-colors font-medium mr-2">Login Page</a>
+        <a href="aicte-dashboard.html" class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium flex items-center gap-1">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l4-4 4 4m0 6l-4 4-4-4"/></svg>
+          Switch to AICTE View
+        </a>
+      </div>
+    </header>
+
+    <!-- PAGE BODY -->
+    <div class="flex-1 px-8 py-8 space-y-8">
+
+      <!-- SUMMARY CARDS -->
+      <section>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+          <!-- Card 1: Total Active FDRs -->
+          <div class="card-hover bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-11 h-11 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              </div>
+              <span class="text-xs text-green-400 bg-green-400/10 border border-green-400/20 px-2 py-1 rounded-full font-medium">+2 this month</span>
+            </div>
+            <p class="text-3xl font-bold text-white mb-1">12</p>
+            <p class="text-sm text-slate-400 font-medium">Total Active FDRs</p>
+            <div class="mt-4 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+              <div class="h-full w-4/5 bg-gradient-to-r from-blue-600 to-blue-400 rounded-full"></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1.5">80% of quota utilized</p>
+          </div>
+
+          <!-- Card 2: Total Amount Deposited -->
+          <div class="card-hover bg-slate-900 border border-slate-800 rounded-2xl p-6">
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <span class="text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-1 rounded-full font-medium">Verified</span>
+            </div>
+            <p class="text-3xl font-bold text-white mb-1">₹ 3.2 Cr</p>
+            <p class="text-sm text-slate-400 font-medium">Total Amount Deposited</p>
+            <div class="mt-4 flex items-end gap-1 h-10">
+              <div class="flex-1 bg-emerald-600/40 rounded-sm" style="height:40%"></div>
+              <div class="flex-1 bg-emerald-600/40 rounded-sm" style="height:60%"></div>
+              <div class="flex-1 bg-emerald-600/40 rounded-sm" style="height:50%"></div>
+              <div class="flex-1 bg-emerald-600/60 rounded-sm" style="height:75%"></div>
+              <div class="flex-1 bg-emerald-500 rounded-sm" style="height:100%"></div>
+            </div>
+            <p class="text-xs text-slate-500 mt-1.5">Across all active deposits</p>
+          </div>
+
+          <!-- Card 3: Expiring Soon (Warning) -->
+          <div class="card-hover bg-gradient-to-br from-amber-900/40 to-orange-900/30 border border-amber-700/40 rounded-2xl p-6 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full -translate-y-8 translate-x-8"></div>
+            <div class="flex items-start justify-between mb-4">
+              <div class="w-11 h-11 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center">
+                <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+              </div>
+              <span class="text-xs text-amber-300 bg-amber-400/15 border border-amber-500/30 px-2 py-1 rounded-full font-medium animate-pulse">⚠ Action Needed</span>
+            </div>
+            <p class="text-3xl font-bold text-amber-300 mb-1">4</p>
+            <p class="text-sm text-amber-200/70 font-medium">Expiring in 30 Days</p>
+            <div class="mt-4 space-y-1.5">
+              <div class="flex items-center justify-between text-xs">
+                <span class="text-amber-300/70">Earliest: Nov 5, 2026</span>
+                <span class="text-amber-400 font-semibold">8 days left</span>
+              </div>
+              <div class="h-1.5 bg-amber-900/50 rounded-full overflow-hidden">
+                <div class="h-full w-1/5 bg-gradient-to-r from-red-500 to-amber-400 rounded-full"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- RECENT FDRs TABLE -->
+      <section>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+          <!-- Table Header -->
+          <div class="flex items-center justify-between px-6 py-5 border-b border-slate-800">
+            <div>
+              <h2 class="text-base font-bold text-white">Recent FDRs</h2>
+              <p class="text-xs text-slate-400 mt-0.5">All your Fixed Deposit Records</p>
+            </div>
+            <div class="flex items-center gap-3">
+              <!-- Search -->
+              <div class="relative">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/></svg>
+                <input type="text" placeholder="Search FDRs..." class="bg-slate-800 border border-slate-700 text-sm text-slate-300 pl-9 pr-4 py-2 rounded-xl w-48 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/30 transition-all placeholder-slate-600"/>
+              </div>
+              <!-- Upload Button -->
+              <a href="upload.html" id="upload-fdr-btn" class="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 text-white text-sm font-semibold px-4 py-2.5 rounded-xl transition-all duration-200 shadow-lg shadow-blue-900/30 hover:shadow-blue-900/50 active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                Upload New FDR
+              </a>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-slate-800 bg-slate-800/40">
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Bank Name</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">FDR Number</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Amount</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Maturity Date</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                  <th class="text-right px-6 py-3 text-xs font-semibold text-slate-400 uppercase tracking-wider">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/60">
+                <!-- Row 1 -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-blue-900/40 border border-blue-800/30 flex items-center justify-center text-xs font-bold text-blue-400">SBI</div>
+                      <div>
+                        <p class="text-sm font-semibold text-white">State Bank of India</p>
+                        <p class="text-xs text-slate-500">New Delhi Branch</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-300 font-mono">SBI-FDR-2024-00871</td>
+                  <td class="px-6 py-4"><span class="text-sm font-bold text-white">₹50,00,000</span></td>
+                  <td class="px-6 py-4 text-sm text-slate-300">Mar 15, 2027</td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-400/10 text-green-400 border border-green-400/20"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>Active</span></td>
+                  <td class="px-6 py-4 text-right"><a href="fdr-detail.html" class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium">View →</a></td>
+                </tr>
+                <!-- Row 2 -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-purple-900/40 border border-purple-800/30 flex items-center justify-center text-xs font-bold text-purple-400">PNB</div>
+                      <div>
+                        <p class="text-sm font-semibold text-white">Punjab National Bank</p>
+                        <p class="text-xs text-slate-500">Rohini, Delhi</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-300 font-mono">PNB-FDR-2024-04521</td>
+                  <td class="px-6 py-4"><span class="text-sm font-bold text-white">₹25,00,000</span></td>
+                  <td class="px-6 py-4 text-sm text-amber-300">Nov 5, 2026 ⚠</td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-400/10 text-blue-400 border border-blue-400/20"><span class="w-1.5 h-1.5 rounded-full bg-blue-400"></span>Verified</span></td>
+                  <td class="px-6 py-4 text-right"><button class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium">View →</button></td>
+                </tr>
+                <!-- Row 3 -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-orange-900/40 border border-orange-800/30 flex items-center justify-center text-xs font-bold text-orange-400">BOB</div>
+                      <div>
+                        <p class="text-sm font-semibold text-white">Bank of Baroda</p>
+                        <p class="text-xs text-slate-500">Dwarka Sector 10</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-300 font-mono">BOB-FDR-2023-11234</td>
+                  <td class="px-6 py-4"><span class="text-sm font-bold text-white">₹10,00,000</span></td>
+                  <td class="px-6 py-4 text-sm text-slate-300">Aug 20, 2026</td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-red-400/10 text-red-400 border border-red-400/20"><span class="w-1.5 h-1.5 rounded-full bg-red-400"></span>Matured</span></td>
+                  <td class="px-6 py-4 text-right"><button class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium">View →</button></td>
+                </tr>
+                <!-- Row 4 -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-teal-900/40 border border-teal-800/30 flex items-center justify-center text-xs font-bold text-teal-400">UBI</div>
+                      <div>
+                        <p class="text-sm font-semibold text-white">Union Bank of India</p>
+                        <p class="text-xs text-slate-500">Connaught Place</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-300 font-mono">UBI-FDR-2025-00312</td>
+                  <td class="px-6 py-4"><span class="text-sm font-bold text-white">₹75,00,000</span></td>
+                  <td class="px-6 py-4 text-sm text-slate-300">Jan 10, 2028</td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-slate-400/10 text-slate-400 border border-slate-500/20"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Submitted</span></td>
+                  <td class="px-6 py-4 text-right"><button class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium">View →</button></td>
+                </tr>
+                <!-- Row 5 -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-lg bg-rose-900/40 border border-rose-800/30 flex items-center justify-center text-xs font-bold text-rose-400">HDFC</div>
+                      <div>
+                        <p class="text-sm font-semibold text-white">HDFC Bank</p>
+                        <p class="text-xs text-slate-500">Laxmi Nagar</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-sm text-slate-300 font-mono">HDFC-FDR-2025-00088</td>
+                  <td class="px-6 py-4"><span class="text-sm font-bold text-white">₹1,00,00,000</span></td>
+                  <td class="px-6 py-4 text-sm text-slate-300">Jun 30, 2027</td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-400/10 text-green-400 border border-green-400/20"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span>Active</span></td>
+                  <td class="px-6 py-4 text-right"><button class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-medium">View →</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Table Footer -->
+          <div class="flex items-center justify-between px-6 py-4 border-t border-slate-800 bg-slate-800/20">
+            <p class="text-xs text-slate-500">Showing 5 of 12 records</p>
+            <div class="flex items-center gap-2">
+              <button class="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-1.5 rounded-lg transition-all">← Prev</button>
+              <button class="text-xs text-white bg-blue-600 px-3 py-1.5 rounded-lg">1</button>
+              <button class="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-1.5 rounded-lg transition-all">2</button>
+              <button class="text-xs text-slate-400 hover:text-white border border-slate-700 hover:border-slate-500 px-3 py-1.5 rounded-lg transition-all">Next →</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Status Legend -->
+      <div class="flex flex-wrap items-center gap-4 text-xs text-slate-500">
+        <span class="font-medium text-slate-400">Status Key:</span>
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-slate-400"></span>Submitted – Awaiting AICTE review</span>
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-blue-400"></span>Verified – Confirmed by official</span>
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-green-400"></span>Active – Fully approved & live</span>
+        <span class="inline-flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-red-400"></span>Matured – Deposit term ended</span>
+      </div>
+
+    </div><!-- end page body -->
+  </main>
+
+</body>
+</html>

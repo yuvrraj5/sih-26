@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Matured FDRs – AICTE Official Admin Portal</title>
+  <meta name="description" content="AICTE Government Official dashboard to monitor and manage fixed deposits that have reached their maturity date."/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter','sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family:'Inter',sans-serif; }
+    .sidebar-link { transition:all 0.2s; }
+    .sidebar-link:hover { background:rgba(37,99,235,0.08); color:#2563eb; }
+    .sidebar-link.active { background:rgba(37,99,235,0.12); color:#2563eb; border-left:3px solid #2563eb; }
+    .card-hover { transition:transform 0.2s,box-shadow 0.2s; }
+    .card-hover:hover { transform:translateY(-3px); box-shadow:0 20px 40px rgba(0,0,0,0.08); }
+    .table-row:hover { background:#f0f7ff; }
+    .pulse-dot { animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+    ::-webkit-scrollbar{width:6px} ::-webkit-scrollbar-track{background:#f1f5f9} ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+
+    /* Modal overlay */
+    #renewal-modal { display:none; }
+    #renewal-modal.open { display:flex; }
+
+    /* Modal entrance animation */
+    @keyframes modal-in {
+      from { opacity:0; transform:scale(0.95) translateY(-8px); }
+      to   { opacity:1; transform:scale(1)   translateY(0); }
+    }
+    #modal-box { animation:modal-in 0.2s ease; }
+
+    /* Success checkmark animation */
+    @keyframes check-pop {
+      0%   { transform:scale(0); opacity:0; }
+      70%  { transform:scale(1.2); opacity:1; }
+      100% { transform:scale(1); }
+    }
+    #modal-success-icon { animation:check-pop 0.4s ease forwards; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex">
+
+  <!-- SIDEBAR -->
+  <aside class="w-64 bg-white border-r border-slate-200 flex flex-col fixed top-0 left-0 h-full z-30 shadow-sm">
+    <!-- Logo -->
+    <div class="px-6 py-5 border-b border-slate-100">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center shadow-lg">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-slate-800 tracking-wide">AICTE Portal</p>
+          <p class="text-xs text-slate-500">Official Admin Panel</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Official Badge -->
+    <div class="px-4 py-3 border-b border-slate-100">
+      <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex items-center gap-2">
+        <div class="w-7 h-7 rounded-full bg-blue-600 flex items-center justify-center">
+          <svg class="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"/></svg>
+        </div>
+        <div>
+          <p class="text-xs font-bold text-blue-800">Govt. Official Access</p>
+          <p class="text-xs text-blue-500">Level-3 Clearance</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-4 space-y-0.5">
+      <a href="aicte-dashboard.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+        Overview
+      </a>
+      <a href="pending-verifications.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/></svg>
+        Pending Verifications
+        <span class="ml-auto text-xs bg-orange-100 text-orange-700 border border-orange-200 px-2 py-0.5 rounded-full font-bold">18</span>
+      </a>
+      <a href="matured-fdrs.html" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+        Matured FDRs
+      </a>
+      <a href="college-compliance.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        College Compliance
+      </a>
+      <a href="audit-logs.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+        Audit Logs
+      </a>
+    </nav>
+
+    <!-- User -->
+    <div class="px-4 py-4 border-t border-slate-100">
+      <div class="flex items-center gap-3 px-2 py-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-xs font-bold text-white">RK</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-semibold text-slate-800 truncate">Rajiv Kumar, IAS</p>
+          <p class="text-xs text-slate-400 truncate">aicte-official@gov.in</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="ml-64 flex-1 flex flex-col min-h-screen">
+
+    <!-- HEADER -->
+    <header class="bg-white border-b border-slate-200 px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+      <div>
+        <h1 class="text-lg font-bold text-slate-800">Matured <span class="text-blue-600">FDRs</span></h1>
+        <p class="text-xs text-slate-400 mt-0.5">Fixed deposits that have reached their maturity date</p>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-2 text-xs text-green-600 bg-green-50 border border-green-200 px-3 py-1.5 rounded-full font-medium">
+          <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+          NeSL Live
+        </div>
+        <div class="relative cursor-pointer">
+          <svg class="w-6 h-6 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+          <span class="pulse-dot absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+        </div>
+        <a href="index.html" class="text-xs text-blue-600 hover:text-blue-800 transition-colors font-medium flex items-center gap-1 border border-blue-200 hover:border-blue-400 px-3 py-1.5 rounded-lg">
+          ← College View
+        </a>
+      </div>
+    </header>
+
+    <!-- BODY -->
+    <div class="flex-1 px-8 py-8 space-y-8">
+
+      <!-- SUMMARY CARDS -->
+      <section class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+
+        <!-- Card 1: Total Matured This Year -->
+        <div class="card-hover bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+              <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+            </div>
+            <span class="text-xs text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full font-medium">FY 2026</span>
+          </div>
+          <p class="text-3xl font-bold text-slate-800">142</p>
+          <p class="text-sm text-slate-500 font-medium mt-0.5">Total Matured This Year</p>
+          <p class="text-xs text-blue-500 mt-2 font-medium">↑ 12 this month</p>
+        </div>
+
+        <!-- Card 2: Total Matured Value -->
+        <div class="card-hover bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center">
+              <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+          </div>
+          <p class="text-3xl font-bold text-slate-800">₹847 Cr</p>
+          <p class="text-sm text-slate-500 font-medium mt-0.5">Total Matured Value</p>
+          <p class="text-xs text-emerald-500 mt-2 font-medium">Across all institutions</p>
+        </div>
+
+        <!-- Card 3: Pending Renewal Action -->
+        <div class="card-hover bg-white border border-orange-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+              <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            </div>
+            <span class="text-xs text-orange-600 bg-orange-50 border border-orange-100 px-2 py-0.5 rounded-full font-medium">Action Needed</span>
+          </div>
+          <p class="text-3xl font-bold text-slate-800">38</p>
+          <p class="text-sm text-slate-500 font-medium mt-0.5">Pending Renewal Action</p>
+          <p class="text-xs text-orange-500 mt-2 font-medium">↑ 5 overdue &gt;180 days</p>
+        </div>
+
+        <!-- Card 4: Auto-Renewed -->
+        <div class="card-hover bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <div class="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center">
+              <svg class="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            </div>
+            <span class="text-xs text-teal-600 bg-teal-50 border border-teal-100 px-2 py-0.5 rounded-full font-medium">Auto</span>
+          </div>
+          <p class="text-3xl font-bold text-slate-800">104</p>
+          <p class="text-sm text-slate-500 font-medium mt-0.5">Auto-Renewed</p>
+          <p class="text-xs text-teal-500 mt-2 font-medium">73.2% auto-renewal rate</p>
+        </div>
+      </section>
+
+      <!-- FILTER BAR + TABLE -->
+      <section>
+        <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+
+          <!-- Table Header + Filters -->
+          <div class="flex flex-wrap items-center justify-between gap-4 px-6 py-5 border-b border-slate-100">
+            <div>
+              <h2 class="text-base font-bold text-slate-800">FDR Maturity Register</h2>
+              <p class="text-xs text-slate-400 mt-0.5">All FDRs that crossed maturity date — sorted by latest</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-3">
+              <!-- Year dropdown -->
+              <select id="filter-year" class="bg-slate-50 border border-slate-200 text-sm text-slate-600 px-3 py-2 rounded-xl focus:outline-none focus:border-blue-400 cursor-pointer">
+                <option value="2026">Year: 2026</option>
+                <option value="2025">Year: 2025</option>
+                <option value="2024">Year: 2024</option>
+              </select>
+              <!-- State dropdown -->
+              <select id="filter-state" class="bg-slate-50 border border-slate-200 text-sm text-slate-600 px-3 py-2 rounded-xl focus:outline-none focus:border-blue-400 cursor-pointer">
+                <option value="">All States</option>
+                <option value="Delhi">Delhi</option>
+                <option value="Rajasthan">Rajasthan</option>
+                <option value="Tamil Nadu">Tamil Nadu</option>
+                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                <option value="Kerala">Kerala</option>
+                <option value="Karnataka">Karnataka</option>
+                <option value="Maharashtra">Maharashtra</option>
+              </select>
+              <!-- Bank name search -->
+              <div class="relative">
+                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" stroke-width="2"/><path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/></svg>
+                <input id="filter-bank" type="text" placeholder="Search bank..." class="bg-slate-50 border border-slate-200 text-sm text-slate-700 pl-9 pr-4 py-2 rounded-xl w-44 focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/30 transition-all placeholder-slate-400"/>
+              </div>
+              <!-- Export CSV -->
+              <button id="export-csv-btn" class="flex items-center gap-2 text-sm font-semibold text-blue-600 border border-blue-300 hover:border-blue-500 hover:bg-blue-50 px-4 py-2 rounded-xl transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Export CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="overflow-x-auto">
+            <table class="w-full">
+              <thead>
+                <tr class="border-b border-slate-100 bg-slate-50/80">
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Institution</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Bank Name</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">FDR Number</th>
+                  <th class="text-right px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Amount</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Issue Date</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Maturity Date</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Days Since Maturity</th>
+                  <th class="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Status</th>
+                  <th class="text-center px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Action</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100" id="fdr-table-body">
+
+                <!-- Row 1: DTU / Bank of Baroda / Renewed / 69 days (yellow) -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-xs font-bold text-white shadow-sm">DTU</div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">DTU</p>
+                        <p class="text-xs text-slate-400">Delhi</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-md bg-orange-100 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-orange-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+                      </div>
+                      <span class="text-sm text-slate-700 font-medium">Bank of Baroda</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4"><span class="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">BOB-FDR-2023-11234</span></td>
+                  <td class="px-6 py-4 text-right"><span class="text-sm font-bold text-slate-800">₹10,00,000</span></td>
+                  <td class="px-6 py-4 text-xs text-slate-500">20 Aug 2023</td>
+                  <td class="px-6 py-4 text-xs text-slate-500">20 Aug 2026</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-yellow-50 text-yellow-700 border border-yellow-200">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      69 days
+                    </span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">● Renewed</span></td>
+                  <td class="px-6 py-4 text-center">
+                    <button class="text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all">View</button>
+                  </td>
+                </tr>
+
+                <!-- Row 2: IIT Delhi / SBI / Pending Renewal / 166 days (orange) -->
+                <tr class="table-row transition-colors bg-orange-50/20">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center text-xs font-bold text-white shadow-sm">IIT</div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">IIT Delhi</p>
+                        <p class="text-xs text-slate-400">Delhi</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-md bg-blue-100 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+                      </div>
+                      <span class="text-sm text-slate-700 font-medium">SBI</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4"><span class="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">SBI-FDR-2022-05521</span></td>
+                  <td class="px-6 py-4 text-right"><span class="text-sm font-bold text-slate-800">₹50,00,000</span></td>
+                  <td class="px-6 py-4 text-xs text-slate-500">15 May 2022</td>
+                  <td class="px-6 py-4 text-xs text-slate-500">15 May 2026</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-orange-50 text-orange-700 border border-orange-200">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      166 days
+                    </span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 border border-orange-200">● Pending Renewal</span></td>
+                  <td class="px-6 py-4 text-center">
+                    <button class="initiate-renewal-btn text-xs font-semibold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-all shadow-sm" data-institution="IIT Delhi" data-fdr="SBI-FDR-2022-05521">Initiate Renewal</button>
+                  </td>
+                </tr>
+
+                <!-- Row 3: VIT / PNB / Renewed / 291 days (red) -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-700 flex items-center justify-center text-xs font-bold text-white shadow-sm">VIT</div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">VIT</p>
+                        <p class="text-xs text-slate-400">Tamil Nadu</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-md bg-purple-100 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+                      </div>
+                      <span class="text-sm text-slate-700 font-medium">PNB</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4"><span class="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">PNB-FDR-2023-03214</span></td>
+                  <td class="px-6 py-4 text-right"><span class="text-sm font-bold text-slate-800">₹25,00,000</span></td>
+                  <td class="px-6 py-4 text-xs text-slate-500">10 Jan 2023</td>
+                  <td class="px-6 py-4 text-xs text-slate-500">10 Jan 2026</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      291 days
+                    </span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">● Renewed</span></td>
+                  <td class="px-6 py-4 text-center">
+                    <button class="text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all">View</button>
+                  </td>
+                </tr>
+
+                <!-- Row 4: BITS Pilani / HDFC / Forfeited / 120 days (orange) -->
+                <tr class="table-row transition-colors bg-red-50/10">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-rose-500 to-red-700 flex items-center justify-center text-xs font-bold text-white shadow-sm">BIT</div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">BITS Pilani</p>
+                        <p class="text-xs text-slate-400">Rajasthan</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-md bg-red-100 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-red-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+                      </div>
+                      <span class="text-sm text-slate-700 font-medium">HDFC</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4"><span class="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">HDFC-FDR-2021-09988</span></td>
+                  <td class="px-6 py-4 text-right"><span class="text-sm font-bold text-slate-800">₹75,00,000</span></td>
+                  <td class="px-6 py-4 text-xs text-slate-500">30 Jun 2021</td>
+                  <td class="px-6 py-4 text-xs text-slate-500">30 Jun 2026</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-orange-50 text-orange-700 border border-orange-200">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      120 days
+                    </span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200">● Forfeited</span></td>
+                  <td class="px-6 py-4 text-center">
+                    <button class="text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all">View</button>
+                  </td>
+                </tr>
+
+                <!-- Row 5: Amity / UBI / Pending Renewal / 243 days (red) -->
+                <tr class="table-row transition-colors bg-orange-50/20">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">AMI</div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">Amity</p>
+                        <p class="text-xs text-slate-400">Uttar Pradesh</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-md bg-amber-100 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-amber-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+                      </div>
+                      <span class="text-sm text-slate-700 font-medium">UBI</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4"><span class="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">UBI-FDR-2022-07741</span></td>
+                  <td class="px-6 py-4 text-right"><span class="text-sm font-bold text-slate-800">₹30,00,000</span></td>
+                  <td class="px-6 py-4 text-xs text-slate-500">28 Feb 2022</td>
+                  <td class="px-6 py-4 text-xs text-slate-500">28 Feb 2026</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      243 days
+                    </span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-orange-50 text-orange-700 border border-orange-200">● Pending Renewal</span></td>
+                  <td class="px-6 py-4 text-center">
+                    <button class="initiate-renewal-btn text-xs font-semibold text-white bg-orange-500 hover:bg-orange-600 px-3 py-1.5 rounded-lg transition-all shadow-sm" data-institution="Amity" data-fdr="UBI-FDR-2022-07741">Initiate Renewal</button>
+                  </td>
+                </tr>
+
+                <!-- Row 6: NIT Calicut / Canara Bank / Renewed / 210 days (red) -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-teal-500 to-cyan-700 flex items-center justify-center text-xs font-bold text-white shadow-sm">NIT</div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">NIT Calicut</p>
+                        <p class="text-xs text-slate-400">Kerala</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-md bg-teal-100 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-teal-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+                      </div>
+                      <span class="text-sm text-slate-700 font-medium">Canara Bank</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4"><span class="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">CAN-FDR-2023-00221</span></td>
+                  <td class="px-6 py-4 text-right"><span class="text-sm font-bold text-slate-800">₹20,00,000</span></td>
+                  <td class="px-6 py-4 text-xs text-slate-500">01 Apr 2023</td>
+                  <td class="px-6 py-4 text-xs text-slate-500">01 Apr 2026</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-red-50 text-red-700 border border-red-200">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      210 days
+                    </span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">● Renewed</span></td>
+                  <td class="px-6 py-4 text-center">
+                    <button class="text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all">View</button>
+                  </td>
+                </tr>
+
+                <!-- Row 7: Manipal / Axis Bank / Under Review / 43 days (yellow) -->
+                <tr class="table-row transition-colors">
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-3">
+                      <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500 to-blue-600 flex items-center justify-center text-xs font-bold text-white shadow-sm">MAP</div>
+                      <div>
+                        <p class="text-sm font-semibold text-slate-800">Manipal</p>
+                        <p class="text-xs text-slate-400">Karnataka</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div class="flex items-center gap-2">
+                      <div class="w-6 h-6 rounded-md bg-sky-100 flex items-center justify-center">
+                        <svg class="w-3.5 h-3.5 text-sky-600" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
+                      </div>
+                      <span class="text-sm text-slate-700 font-medium">Axis Bank</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4"><span class="text-xs font-mono text-slate-600 bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">AXIS-FDR-2024-00088</span></td>
+                  <td class="px-6 py-4 text-right"><span class="text-sm font-bold text-slate-800">₹40,00,000</span></td>
+                  <td class="px-6 py-4 text-xs text-slate-500">15 Sep 2024</td>
+                  <td class="px-6 py-4 text-xs text-slate-500">15 Sep 2026</td>
+                  <td class="px-6 py-4">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-lg bg-yellow-50 text-yellow-700 border border-yellow-200">
+                      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>
+                      43 days
+                    </span>
+                  </td>
+                  <td class="px-6 py-4"><span class="inline-flex items-center text-xs font-semibold px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200">● Under Review</span></td>
+                  <td class="px-6 py-4 text-center">
+                    <button class="text-xs font-semibold text-blue-600 hover:text-blue-800 border border-blue-200 hover:border-blue-400 hover:bg-blue-50 px-3 py-1.5 rounded-lg transition-all">View</button>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination Footer -->
+          <div class="flex items-center justify-between px-6 py-4 border-t border-slate-100 bg-slate-50/50">
+            <p class="text-xs text-slate-400">Showing 7 of 142 matured FDRs</p>
+            <div class="flex items-center gap-1.5">
+              <button id="pg-prev" class="flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-400 hover:border-blue-300 hover:text-blue-600 transition-all disabled:opacity-40 disabled:cursor-not-allowed text-sm" disabled>‹</button>
+              <button class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-600 text-white text-sm font-bold shadow-sm">1</button>
+              <button class="flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-all text-sm">2</button>
+              <button class="flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-all text-sm">3</button>
+              <span class="text-xs text-slate-400 px-1">…</span>
+              <button class="flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-blue-300 hover:text-blue-600 transition-all text-sm">21</button>
+              <button id="pg-next" class="flex items-center justify-center w-8 h-8 rounded-lg border border-slate-200 bg-white text-slate-500 hover:border-blue-300 hover:text-blue-600 transition-all text-sm">›</button>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============================
+       RENEWAL CONFIRMATION MODAL
+  ============================= -->
+  <div id="renewal-modal" class="fixed inset-0 z-50 items-center justify-center bg-slate-900/40 backdrop-blur-sm">
+    <div id="modal-box" class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-md mx-4 overflow-hidden">
+
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 rounded-xl bg-orange-50 border border-orange-100 flex items-center justify-center">
+            <svg class="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-800">Initiate FDR Renewal</h3>
+            <p class="text-xs text-slate-400">Confirm renewal initiation</p>
+          </div>
+        </div>
+        <button id="modal-close-x" class="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-all text-lg leading-none">×</button>
+      </div>
+
+      <!-- Modal Body -->
+      <div id="modal-confirm-body" class="px-6 py-6 space-y-4">
+        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
+          <p class="text-xs text-orange-600 font-semibold mb-3 uppercase tracking-wide">FDR Details</p>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-xs text-slate-500">Institution</span>
+              <span id="modal-institution" class="text-xs font-semibold text-slate-800">–</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-xs text-slate-500">FDR Number</span>
+              <span id="modal-fdr" class="text-xs font-mono font-semibold text-slate-700">–</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-xs text-slate-500">Action</span>
+              <span class="text-xs font-semibold text-orange-600">Renewal Initiation</span>
+            </div>
+          </div>
+        </div>
+        <p class="text-xs text-slate-500 leading-relaxed">
+          This will send a renewal request to the respective bank branch and notify the institution. 
+          The request will be logged in the <strong>Audit Trail</strong> with your credentials.
+        </p>
+        <div class="flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-xl px-4 py-3">
+          <svg class="w-4 h-4 text-blue-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/></svg>
+          <p class="text-xs text-blue-700">Action initiated by: <strong>Rajiv Kumar, IAS</strong> · aicte-official@gov.in</p>
+        </div>
+      </div>
+
+      <!-- Modal Success (hidden by default) -->
+      <div id="modal-success-body" class="hidden px-6 py-8 flex flex-col items-center text-center">
+        <div id="modal-success-icon" class="w-16 h-16 rounded-full bg-emerald-100 border-2 border-emerald-300 flex items-center justify-center mb-4">
+          <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        </div>
+        <h4 class="text-base font-bold text-slate-800 mb-1">Renewal Initiated!</h4>
+        <p class="text-xs text-slate-500" id="modal-success-msg">The renewal request has been sent to the bank and the institution has been notified.</p>
+        <p class="text-xs text-slate-400 mt-3">Reference: <span id="modal-success-ref" class="font-mono font-semibold text-slate-600">–</span></p>
+      </div>
+
+      <!-- Modal Footer -->
+      <div id="modal-footer" class="px-6 py-4 border-t border-slate-100 bg-slate-50/60 flex items-center justify-end gap-3">
+        <button id="modal-cancel-btn" class="text-sm font-medium text-slate-600 hover:text-slate-800 px-4 py-2 rounded-xl border border-slate-200 hover:border-slate-300 transition-all bg-white">Cancel</button>
+        <button id="modal-confirm-btn" class="text-sm font-semibold text-white bg-orange-500 hover:bg-orange-600 px-5 py-2 rounded-xl transition-all shadow-sm flex items-center gap-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+          Confirm Renewal
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCRIPTS -->
+  <script>
+    // ---- Modal Logic ----
+    const modal       = document.getElementById('renewal-modal');
+    const modalBox    = document.getElementById('modal-box');
+    const closeX      = document.getElementById('modal-close-x');
+    const cancelBtn   = document.getElementById('modal-cancel-btn');
+    const confirmBtn  = document.getElementById('modal-confirm-btn');
+    const confirmBody = document.getElementById('modal-confirm-body');
+    const successBody = document.getElementById('modal-success-body');
+    const modalFooter = document.getElementById('modal-footer');
+
+    let activeInstitution = '', activeFdr = '';
+
+    function openModal(institution, fdr) {
+      activeInstitution = institution;
+      activeFdr = fdr;
+      document.getElementById('modal-institution').textContent = institution;
+      document.getElementById('modal-fdr').textContent = fdr;
+
+      // Reset to confirm view
+      confirmBody.classList.remove('hidden');
+      successBody.classList.add('hidden');
+      confirmBtn.classList.remove('hidden');
+      cancelBtn.textContent = 'Cancel';
+      cancelBtn.onclick = closeModal;
+
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function generateRef() {
+      return 'RNW-' + Date.now().toString(36).toUpperCase() + '-AICTE';
+    }
+
+    closeX.addEventListener('click', closeModal);
+
+    // Close on backdrop click
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) closeModal();
+    });
+
+    // Confirm button
+    confirmBtn.addEventListener('click', function() {
+      // Show loading state
+      confirmBtn.disabled = true;
+      confirmBtn.innerHTML = '<svg class="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Processing…';
+
+      setTimeout(function() {
+        // Show success view
+        confirmBody.classList.add('hidden');
+        successBody.classList.remove('hidden');
+        confirmBtn.classList.add('hidden');
+        document.getElementById('modal-success-msg').textContent =
+          'Renewal request for ' + activeInstitution + ' (' + activeFdr + ') has been sent to the bank. The institution has been notified.';
+        document.getElementById('modal-success-ref').textContent = generateRef();
+        cancelBtn.textContent = 'Close';
+        cancelBtn.onclick = closeModal;
+
+        // Re-enable button for next use
+        confirmBtn.disabled = false;
+        confirmBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg> Confirm Renewal';
+      }, 1200);
+    });
+
+    // Attach Initiate Renewal buttons
+    document.querySelectorAll('.initiate-renewal-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        openModal(btn.dataset.institution, btn.dataset.fdr);
+      });
+    });
+
+    // ---- Export CSV ----
+    document.getElementById('export-csv-btn').addEventListener('click', function() {
+      const rows = [
+        ['Institution', 'Bank Name', 'FDR Number', 'Amount', 'Issue Date', 'Maturity Date', 'Days Since Maturity', 'Status'],
+        ['DTU', 'Bank of Baroda', 'BOB-FDR-2023-11234', '10,00,000', '20 Aug 2023', '20 Aug 2026', '69', 'Renewed'],
+        ['IIT Delhi', 'SBI', 'SBI-FDR-2022-05521', '50,00,000', '15 May 2022', '15 May 2026', '166', 'Pending Renewal'],
+        ['VIT', 'PNB', 'PNB-FDR-2023-03214', '25,00,000', '10 Jan 2023', '10 Jan 2026', '291', 'Renewed'],
+        ['BITS Pilani', 'HDFC', 'HDFC-FDR-2021-09988', '75,00,000', '30 Jun 2021', '30 Jun 2026', '120', 'Forfeited'],
+        ['Amity', 'UBI', 'UBI-FDR-2022-07741', '30,00,000', '28 Feb 2022', '28 Feb 2026', '243', 'Pending Renewal'],
+        ['NIT Calicut', 'Canara Bank', 'CAN-FDR-2023-00221', '20,00,000', '01 Apr 2023', '01 Apr 2026', '210', 'Renewed'],
+        ['Manipal', 'Axis Bank', 'AXIS-FDR-2024-00088', '40,00,000', '15 Sep 2024', '15 Sep 2026', '43', 'Under Review'],
+      ];
+      const csv = rows.map(function(r){ return r.join(','); }).join('\n');
+      const blob = new Blob([csv], {type:'text/csv'});
+      const url  = URL.createObjectURL(blob);
+      const a    = document.createElement('a');
+      a.href = url; a.download = 'matured-fdrs.csv'; a.click();
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>

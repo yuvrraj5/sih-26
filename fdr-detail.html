@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>FDR Detail – SBI-FDR-2024-00871 | AICTE SecureVault</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    body { font-family:'Inter',sans-serif; }
+    .sidebar-link { transition:all 0.2s; }
+    .sidebar-link:hover { background:rgba(59,130,246,0.15); color:#60a5fa; }
+    .sidebar-link.active { background:rgba(59,130,246,0.2); color:#3b82f6; border-left:3px solid #3b82f6; }
+    .timeline-line { position:absolute; left:15px; top:0; bottom:0; width:2px; background:linear-gradient(to bottom, #3b82f6, #1e293b); }
+    .tab { transition:all 0.2s; }
+    .tab.active { color:#3b82f6; border-bottom:2px solid #3b82f6; }
+    .tab:not(.active) { border-bottom:2px solid transparent; color:#64748b; }
+    .tab:hover:not(.active) { color:#94a3b8; }
+    .pulse-dot { animation:pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(1.3)} }
+    .section-appear { animation:fadeUp 0.4s ease forwards; }
+    @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-200 min-h-screen flex">
+
+  <!-- SIDEBAR (same as index) -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col fixed top-0 left-0 h-full z-30">
+    <div class="px-6 py-5 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center shadow-lg">
+          <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+        </div>
+        <div>
+          <p class="text-sm font-bold text-white">AICTE FDR</p>
+          <p class="text-xs text-slate-400">SecureVault Portal</p>
+        </div>
+      </div>
+    </div>
+    <div class="px-4 py-4 border-b border-slate-800">
+      <div class="bg-blue-900/20 border border-blue-800/30 rounded-xl p-3">
+        <p class="text-xs text-blue-400 font-medium mb-1">Logged in as</p>
+        <p class="text-sm font-semibold text-white">Delhi Technical University</p>
+        <p class="text-xs text-slate-400 mt-0.5">Institution ID: DTU-2024-001</p>
+      </div>
+    </div>
+    <nav class="flex-1 px-3 py-4 space-y-1">
+      <a href="index.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="3" width="7" height="7" rx="1" stroke-width="2"/><rect x="3" y="14" width="7" height="7" rx="1" stroke-width="2"/><rect x="14" y="14" width="7" height="7" rx="1" stroke-width="2"/></svg>
+        Home
+      </a>
+      <a href="#" class="sidebar-link active flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V7l7-5 7 5v12a2 2 0 01-2 2z"/></svg>
+        My FDRs
+        <span class="ml-auto text-xs bg-blue-600 text-white px-2 py-0.5 rounded-full">12</span>
+      </a>
+      <a href="upload.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+        Upload New
+      </a>
+      <a href="notifications.html" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/></svg>
+        Notifications
+        <span class="ml-auto text-xs bg-red-500 text-white px-2 py-0.5 rounded-full">3</span>
+      </a>
+      <a href="#" class="sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3" stroke-width="2"/></svg>
+        Settings
+      </a>
+    </nav>
+    <div class="px-4 py-4 border-t border-slate-800">
+      <div class="flex items-center gap-3 px-3 py-2">
+        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xs font-bold text-white">AD</div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-white truncate">Admin User</p>
+          <p class="text-xs text-slate-400 truncate">admin@dtu.ac.in</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="ml-64 flex-1 flex flex-col">
+
+    <!-- HEADER -->
+    <header class="bg-slate-900/80 backdrop-blur border-b border-slate-800 px-8 py-4 flex items-center justify-between sticky top-0 z-20">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center transition-colors text-slate-400 hover:text-white">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </a>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-bold text-white">SBI-FDR-2024-00871</h1>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-green-400/10 text-green-400 border border-green-400/20">
+              <span class="w-1.5 h-1.5 rounded-full bg-green-400 pulse-dot"></span>Active
+            </span>
+          </div>
+          <p class="text-xs text-slate-400">State Bank of India · New Delhi Branch</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="flex items-center gap-2 text-xs text-slate-300 bg-slate-800 hover:bg-slate-700 border border-slate-700 px-3.5 py-2 rounded-xl transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          Download PDF
+        </button>
+        <button class="flex items-center gap-2 text-xs text-white bg-blue-600 hover:bg-blue-500 px-3.5 py-2 rounded-xl transition-all">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          Renew FDR
+        </button>
+      </div>
+    </header>
+
+    <div class="flex-1 px-8 py-8 space-y-6">
+
+      <!-- Top Key Info Cards -->
+      <div class="grid grid-cols-4 gap-4 section-appear">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <p class="text-xs text-slate-500 font-medium mb-1">FDR Amount</p>
+          <p class="text-2xl font-black text-white">₹50,00,000</p>
+          <p class="text-xs text-emerald-400 mt-1 font-medium">Fifty Lakhs INR</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <p class="text-xs text-slate-500 font-medium mb-1">Issue Date</p>
+          <p class="text-2xl font-black text-white">15 Mar</p>
+          <p class="text-xs text-slate-400 mt-1">2024</p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <p class="text-xs text-slate-500 font-medium mb-1">Maturity Date</p>
+          <p class="text-2xl font-black text-white">15 Mar</p>
+          <p class="text-xs text-slate-400 mt-1">2027 · <span class="text-blue-400">503 days left</span></p>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5">
+          <p class="text-xs text-slate-500 font-medium mb-1">Interest Rate</p>
+          <p class="text-2xl font-black text-white">7.25%</p>
+          <p class="text-xs text-slate-400 mt-1">p.a. (compounding)</p>
+        </div>
+      </div>
+
+      <!-- Tabs + Content -->
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden section-appear" style="animation-delay:0.1s">
+        <!-- Tabs -->
+        <div class="flex items-center gap-0 border-b border-slate-800 px-6">
+          <button onclick="showTab('overview')" id="tab-overview" class="tab active text-sm font-semibold px-4 py-4">Overview</button>
+          <button onclick="showTab('documents')" id="tab-documents" class="tab text-sm font-semibold px-4 py-4">Documents</button>
+          <button onclick="showTab('timeline')" id="tab-timeline" class="tab text-sm font-semibold px-4 py-4">Timeline</button>
+          <button onclick="showTab('nesl')" id="tab-nesl" class="tab text-sm font-semibold px-4 py-4">NeSL Verification</button>
+        </div>
+
+        <!-- TAB: Overview -->
+        <div id="panel-overview" class="p-6 space-y-6">
+          <div class="grid grid-cols-2 gap-8">
+            <!-- Left: FDR Details -->
+            <div class="space-y-4">
+              <h3 class="text-sm font-bold text-white">FDR Details</h3>
+              <div class="space-y-3">
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-xs text-slate-500">FDR Number</span>
+                  <span class="text-xs font-semibold text-white font-mono">SBI-FDR-2024-00871</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-xs text-slate-500">Bank Name</span>
+                  <span class="text-xs font-semibold text-white">State Bank of India</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-xs text-slate-500">Branch</span>
+                  <span class="text-xs font-semibold text-white">Connaught Place, New Delhi</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-xs text-slate-500">IFSC Code</span>
+                  <span class="text-xs font-semibold text-white font-mono">SBIN0001234</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-xs text-slate-500">Account Number</span>
+                  <span class="text-xs font-semibold text-white font-mono">••••••• 5521</span>
+                </div>
+                <div class="flex justify-between py-2 border-b border-slate-800">
+                  <span class="text-xs text-slate-500">Nominee</span>
+                  <span class="text-xs font-semibold text-white">AICTE (Government of India)</span>
+                </div>
+                <div class="flex justify-between py-2">
+                  <span class="text-xs text-slate-500">Purpose</span>
+                  <span class="text-xs font-semibold text-white">AICTE Security Deposit</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Maturity Countdown + Visual -->
+            <div class="space-y-4">
+              <h3 class="text-sm font-bold text-white">Deposit Lifecycle</h3>
+
+              <!-- Progress Arc Visual -->
+              <div class="bg-slate-800/40 rounded-2xl p-5 text-center">
+                <div class="relative w-36 h-36 mx-auto mb-4">
+                  <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="#1e293b" stroke-width="8"/>
+                    <circle cx="50" cy="50" r="42" fill="none" stroke="url(#grad1)" stroke-width="8" stroke-linecap="round"
+                      stroke-dasharray="263.9" stroke-dashoffset="79.17"/>
+                    <defs>
+                      <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" style="stop-color:#2563eb"/>
+                        <stop offset="100%" style="stop-color:#7c3aed"/>
+                      </linearGradient>
+                    </defs>
+                  </svg>
+                  <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <p class="text-2xl font-black text-white">70%</p>
+                    <p class="text-xs text-slate-400">Elapsed</p>
+                  </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2 text-center">
+                  <div>
+                    <p class="text-base font-bold text-white">1096</p>
+                    <p class="text-xs text-slate-500">Total Days</p>
+                  </div>
+                  <div class="border-x border-slate-700">
+                    <p class="text-base font-bold text-blue-400">593</p>
+                    <p class="text-xs text-slate-500">Elapsed</p>
+                  </div>
+                  <div>
+                    <p class="text-base font-bold text-emerald-400">503</p>
+                    <p class="text-xs text-slate-500">Remaining</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Accrued Interest -->
+              <div class="bg-emerald-950/30 border border-emerald-800/20 rounded-xl p-4">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <p class="text-xs text-emerald-400 font-medium">Accrued Interest (est.)</p>
+                    <p class="text-xl font-black text-white mt-0.5">₹ 10,73,214</p>
+                  </div>
+                  <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                </div>
+                <p class="text-xs text-slate-500 mt-2">Based on 7.25% p.a. on ₹50,00,000</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: Documents -->
+        <div id="panel-documents" class="hidden p-6">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 hover:border-blue-500/30 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-red-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-white">FDR_Certificate_SBI.pdf</p>
+                  <p class="text-xs text-slate-400 mt-0.5">Uploaded 15 Mar 2024 · 2.4 MB · PDF</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-full font-medium">✓ NeSL Verified</span>
+                <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 hover:border-blue-500/30 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-white">AICTE_Acknowledgement_Letter.pdf</p>
+                  <p class="text-xs text-slate-400 mt-0.5">Generated 18 Mar 2024 · 0.8 MB · PDF</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-blue-400 bg-blue-400/10 border border-blue-400/20 px-2.5 py-1 rounded-full font-medium">Official</span>
+                <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              </div>
+            </div>
+            <div class="flex items-center justify-between bg-slate-800/40 border border-slate-700/50 rounded-xl p-4 hover:border-blue-500/30 transition-colors cursor-pointer group">
+              <div class="flex items-center gap-4">
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  <svg class="w-5 h-5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                </div>
+                <div>
+                  <p class="text-sm font-semibold text-white">NeSL_Verification_Report.pdf</p>
+                  <p class="text-xs text-slate-400 mt-0.5">Auto-generated 15 Mar 2024 · 0.3 MB · PDF</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="text-xs text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2.5 py-1 rounded-full font-medium">System</span>
+                <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              </div>
+            </div>
+          </div>
+          <div class="mt-4 border-2 border-dashed border-slate-700 rounded-xl p-6 text-center">
+            <p class="text-sm text-slate-400">Drag additional documents here or <span class="text-blue-400 cursor-pointer hover:text-blue-300">click to upload</span></p>
+          </div>
+        </div>
+
+        <!-- TAB: Timeline -->
+        <div id="panel-timeline" class="hidden p-6">
+          <div class="relative pl-10">
+            <div class="timeline-line"></div>
+            <div class="space-y-8">
+              <div class="relative">
+                <div class="absolute -left-10 w-7 h-7 rounded-full bg-emerald-500 border-4 border-slate-900 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold text-white">FDR Submitted via Portal</p>
+                    <span class="text-xs text-slate-400">15 Mar 2024, 11:32 AM</span>
+                  </div>
+                  <p class="text-xs text-slate-400">Original FDR certificate uploaded by Admin User. AI-OCR extracted all fields with 98% confidence.</p>
+                </div>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-10 w-7 h-7 rounded-full bg-emerald-500 border-4 border-slate-900 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold text-white">NeSL Auto-Verification Complete</p>
+                    <span class="text-xs text-slate-400">15 Mar 2024, 11:34 AM</span>
+                  </div>
+                  <p class="text-xs text-slate-400">NeSL cross-verified deposit authenticity. Ref: NESL-2024-TXNID-41822. All fields matched.</p>
+                </div>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-10 w-7 h-7 rounded-full bg-blue-500 border-4 border-slate-900 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                </div>
+                <div class="bg-slate-800/40 border border-slate-700/50 rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold text-white">Verified by AICTE Official</p>
+                    <span class="text-xs text-slate-400">18 Mar 2024, 3:15 PM</span>
+                  </div>
+                  <p class="text-xs text-slate-400">Approved by Rajiv Kumar, IAS. Acknowledgement letter generated and sent to institution.</p>
+                </div>
+              </div>
+              <div class="relative">
+                <div class="absolute -left-10 w-7 h-7 rounded-full bg-green-500 border-4 border-slate-900 flex items-center justify-center">
+                  <div class="w-2.5 h-2.5 bg-white rounded-full"></div>
+                </div>
+                <div class="bg-emerald-950/30 border border-emerald-800/20 rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold text-emerald-300">Status: ACTIVE</p>
+                    <span class="text-xs text-emerald-400">19 Mar 2024 – Present</span>
+                  </div>
+                  <p class="text-xs text-emerald-500/70">FDR is currently active and counted towards AICTE compliance requirement.</p>
+                </div>
+              </div>
+              <div class="relative opacity-40">
+                <div class="absolute -left-10 w-7 h-7 rounded-full bg-slate-700 border-4 border-slate-900 flex items-center justify-center">
+                  <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                </div>
+                <div class="bg-slate-800/20 border border-slate-700/30 border-dashed rounded-xl p-4">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="text-sm font-bold text-slate-400">Maturity Date</p>
+                    <span class="text-xs text-slate-500">15 Mar 2027</span>
+                  </div>
+                  <p class="text-xs text-slate-600">FDR will mature. Renewal reminder will be sent 60 days before.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB: NeSL -->
+        <div id="panel-nesl" class="hidden p-6">
+          <div class="space-y-4">
+            <!-- Verification Banner -->
+            <div class="bg-gradient-to-r from-emerald-950/60 to-teal-950/60 border border-emerald-700/30 rounded-2xl p-6">
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center flex-shrink-0">
+                  <svg class="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center gap-3 mb-2">
+                    <h3 class="text-base font-bold text-emerald-300">NeSL Verification: PASSED</h3>
+                    <span class="text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2.5 py-0.5 rounded-full font-bold">AUTHENTIC</span>
+                  </div>
+                  <p class="text-sm text-emerald-500/80">This FDR has been cross-verified against the National e-Governance Services Ltd. (NeSL) live database. All extracted fields match official bank records.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- NeSL Fields Grid -->
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-3">
+                <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Verification Details</h4>
+                <div class="space-y-2">
+                  <div class="flex justify-between py-2 border-b border-slate-800">
+                    <span class="text-xs text-slate-500">Transaction ID</span>
+                    <span class="text-xs font-mono font-semibold text-white">NESL-2024-TXNID-41822</span>
+                  </div>
+                  <div class="flex justify-between py-2 border-b border-slate-800">
+                    <span class="text-xs text-slate-500">Verification Date</span>
+                    <span class="text-xs font-semibold text-white">15 Mar 2024, 11:34 AM</span>
+                  </div>
+                  <div class="flex justify-between py-2 border-b border-slate-800">
+                    <span class="text-xs text-slate-500">API Version</span>
+                    <span class="text-xs font-mono font-semibold text-white">NeSL-API v3.2.1</span>
+                  </div>
+                  <div class="flex justify-between py-2">
+                    <span class="text-xs text-slate-500">Confidence Score</span>
+                    <span class="text-xs font-bold text-emerald-400">98.4%</span>
+                  </div>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <h4 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Fields Verified</h4>
+                <div class="space-y-2">
+                  <div class="flex items-center gap-2 py-1.5"><svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-xs text-slate-300">FDR Number</span></div>
+                  <div class="flex items-center gap-2 py-1.5"><svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-xs text-slate-300">Bank & Branch Details</span></div>
+                  <div class="flex items-center gap-2 py-1.5"><svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-xs text-slate-300">Deposit Amount</span></div>
+                  <div class="flex items-center gap-2 py-1.5"><svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-xs text-slate-300">Issue & Maturity Dates</span></div>
+                  <div class="flex items-center gap-2 py-1.5"><svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-xs text-slate-300">Nominee Name (AICTE)</span></div>
+                  <div class="flex items-center gap-2 py-1.5"><svg class="w-4 h-4 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg><span class="text-xs text-slate-300">Interest Rate</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function showTab(name) {
+      ['overview','documents','timeline','nesl'].forEach(t => {
+        document.getElementById('tab-' + t).className = t === name
+          ? 'tab active text-sm font-semibold px-4 py-4'
+          : 'tab text-sm font-semibold px-4 py-4';
+        document.getElementById('panel-' + t).classList.toggle('hidden', t !== name);
+      });
+    }
+  </script>
+</body>
+</html>
